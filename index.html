@@ -5,7 +5,7 @@
 		<meta charset="utf-8" />
 		<meta
 			name="viewport"
-			content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta
@@ -26,53 +26,142 @@
 			a, body {
 				color: white;
 			}
-			#info {
+			#toolbar {
 				z-index: 100;
 				position: absolute;
-				top: 10px;
-				left: 15px;
+				top: 20px;
+				left: 20px;
+				width: 250px;
+				height: 500px;
+				background: #e5e5e5;
+				border: 1px solid #cccccc;
+				border-radius: 12px;
+				padding: 15px;
+				color: #333;
+				box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s ease;
+				margin-bottom: 20px;
 			}
-			#menu-icon {
-				cursor: pointer;
-				font-size: 24px;
+			#toolbar.collapsed {
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+				overflow: hidden;
 			}
-			#menu {
+			#toolbar.collapsed #search,
+			#toolbar.collapsed #options,
+			#toolbar.collapsed #toggle-menu {
 				display: none;
+			}
+			#toolbar.collapsed::before {
+				content: '\f0c9';
+				font-family: 'Font Awesome 6 Free';
+				font-weight: 900;
+				font-size: 24px;
+				color: #333;
+			}
+			#search {
+				width: 100%;
+				padding: 10px;
+				margin-bottom: 15px;
+				border: none;
+				border-radius: 6px;
+				background: #f5f5f5;
+				color: #333;
+				font-size: 14px;
+				outline: none;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+				max-width: 92%;
+			}
+			#search:focus {
+				background: #fff;
+				box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+			}
+			#options {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				max-height: calc(100% - 100px);
+				overflow-y: auto;
+			}
+			#options li {
+				padding: 12px 15px;
+				cursor: pointer;
+				border-radius: 6px;
+				color: #333;
+				font-size: 14px;
+				font-weight: 500;
+				text-align: left;
+				position: relative;
+				transition: background 0.2s ease, color 0.2s ease;
+			}
+			#options li:hover {
+				background: #e0e7ff;
+				color: #1e40af;
+				transition: background 0.2s ease, color 0.2s ease;
+			}
+			#options li.active {
+				background: #dbeafe;
+				color: #1e3a8a;
+				font-weight: 600;
+				transition: none;
+			}
+			#options li:active {
+				transition: none;
+			}
+			#options li + li::before {
+				content: '';
+				position: absolute;
+				top: -6px;
+				left: 15px;
+				width: calc(100% - 40px);
+				height: 1px;
+				background: rgba(0, 0, 0, 0.1);
+			}
+			#toggle-menu {
+				position: absolute;
+				bottom: 10px;
+				left: 50%;
+				transform: translateX(-50%);
+				display: flex;
+				justify-content: center;
+				width: 30px;
+				height: 30px;
+				cursor: pointer;
+			}
+			#toggle-menu i {
+				font-size: 20px;
+				color: #333;
+				transition: transform 0.3s ease;
+			}
+			#toggle-menu i:hover {
+				color: #1e40af;
+			}
+			#toggle-menu i.collapsed {
+				transform: rotate(180deg);
+			}
+			#splat-display {
 				position: absolute;
 				top: 40px;
-				left: 15px;
+				right: 15px;
 				background: rgba(0, 0, 0, 0.9);
 				border-radius: 5px;
 				padding: 10px;
 				z-index: 101;
 				width: 200px;
 			}
-			#menu.show {
-				display: block;
-			}
-			#search {
-				width: 96%;
-				padding: 8px;
-				margin-bottom: 10px;
-				border: none;
-				border-radius: 3px;
-				background: #333;
-				color: white;
-			}
-			#options {
+			#splat-list {
 				list-style: none;
 				padding: 0;
 				margin: 0;
-				max-height: 200px;
-				overflow-y: auto;
 			}
-			#options li {
+			#splat-list li {
 				padding: 8px;
-				cursor: pointer;
 				border-radius: 3px;
-			}
-			#options li:hover {
-				background: #444;
 			}
 			h3 {
 				margin: 5px 0;
@@ -83,6 +172,10 @@
 			}
 			.cube-wrapper {
 				transform-style: preserve-3d;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translateX(200px) translateY(-50%);
 			}
 			.cube {
 				transform-style: preserve-3d;
@@ -170,14 +263,11 @@
 				z-index: 999;
 				right: 10px;
 			}
-			#menu{
-				width:400px
-			}
 			#caminfo {
 				position: absolute;
 				top: 10px;
 				z-index: 999;
-				right: 10px;
+				right: 230px;
 			}
 			#canvas {
 				display: block;
@@ -194,25 +284,134 @@
 			body.nohf #progress, body.nohf .cube-face {
 				background: #ff9d0d;
 			}
+
+			/* Responsive Design */
+			@media (max-width: 768px) {
+				#toolbar {
+					width: 200px;
+					height: 400px;
+					top: 10px;
+					left: 10px;
+					padding: 10px;
+				}
+				#search {
+					padding: 8px;
+					font-size: 12px;
+				}
+				#options li {
+					padding: 10px 12px;
+					font-size: 12px;
+				}
+				#toggle-menu {
+					width: 25px;
+					height: 25px;
+					bottom: 5px;
+				}
+				#toggle-menu i {
+					font-size: 18px;
+				}
+				#splat-display {
+					top: 30px;
+					right: 10px;
+					width: 150px;
+					padding: 8px;
+				}
+				#splat-list li {
+					padding: 6px;
+					font-size: 12px;
+				}
+				#quality, #caminfo {
+					font-size: 12px;
+				}
+				.cube-wrapper {
+					transform: translateX(150px) translateY(-50%);
+				}
+			}
+
+			@media (max-width: 480px) {
+				#toolbar {
+					width: 50px;
+					height: 50px;
+					top: 5px;
+					left: 5px;
+					padding: 0;
+					border-radius: 50%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: #e5e5e5;
+					border: 1px solid #cccccc;
+					box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+				}
+				#toolbar.expanded {
+					width: 150px;
+					height: 300px;
+					border-radius: 12px;
+					padding: 8px;
+				}
+				#toolbar.expanded #search,
+				#toolbar.expanded #options,
+				#toolbar.expanded #toggle-menu {
+					display: block;
+				}
+				#search {
+					padding: 6px;
+					font-size: 10px;
+				}
+				#options {
+					max-height: calc(100% - 80px);
+				}
+				#options li {
+					padding: 8px 10px;
+					font-size: 10px;
+				}
+				#toggle-menu {
+					width: 20px;
+					height: 20px;
+					bottom: 3px;
+				}
+				#toggle-menu i {
+					font-size: 16px;
+				}
+				#splat-display {
+					top: 20px;
+					right: 5px;
+					width: 120px;
+					padding: 6px;
+				}
+				#splat-list li {
+					padding: 4px;
+					font-size: 10px;
+				}
+				#quality, #caminfo {
+					font-size: 10px;
+				}
+				.cube-wrapper {
+					transform: translateX(100px) translateY(-50%);
+				}
+			}
 		</style>
 	</head>
 	<body>
 		<script>
 			if (location.host.includes('hf.space')) document.body.classList.add('nohf');
 		</script>
-		<div id="info">
-			<i id="menu-icon" class="fas fa-bars"></i>
-			<div id="menu">
-				<input type="text" id="search" placeholder="Search splat files..." />
-				<ul id="options">
-					<li data-file="3283.splat">cay1</li>
-					<li data-file="3284.splat">cay2</li>
-					<li data-file="capy.splat">capypara</li>
-					<li data-file="garden.splat">Garden</li>
-					<!-- <li data-file="bonsai.splat">Bonsai</li> -->
-				</ul>
+		<div id="toolbar">
+			<input type="text" id="search" placeholder="Search splat files..." />
+			<ul id="options">
+				<li data-file="3283.splat">Cây 1</li>
+				<li data-file="3284.splat">Cây 2</li>
+				<li data-file="capy.splat">Capy</li>
+				<!-- <li data-file="garden.splat">Garden</li> -->
+			</ul>
+			<div id="toggle-menu">
+				<i class="fas fa-angle-up"></i>
 			</div>
-			
+		</div>
+		<div id="splat-display" hidden>
+			<ul id="splat-list">
+				<!-- Splat items will be populated here -->
+			</ul>
 		</div>
 		<div id="progress"></div>
 		<div id="message"></div>
@@ -238,15 +437,27 @@
 			<span id="camid"></span>
 		</div>
 		<script src="main.js"></script>
-		<script>// Menu handling logic
-			const menuIcon = document.getElementById('menu-icon');
-			const menu = document.getElementById('menu');
+		<script>
+			// Toolbar handling logic
 			const search = document.getElementById('search');
 			const options = document.getElementById('options');
+			const splatDisplay = document.getElementById('splat-display');
+			const splatList = document.getElementById('splat-list');
+			const toolbar = document.getElementById('toolbar');
+			const toggleMenu = document.getElementById('toggle-menu');
+			const toggleIcon = toggleMenu.querySelector('i');
 
-			menuIcon.addEventListener('click', () => {
-				menu.classList.toggle('show');
-			});
+			// Check if on mobile and apply collapsed state by default
+			function checkMobile() {
+				if (window.innerWidth <= 480) {
+					toolbar.classList.add('collapsed');
+					[search, options, toggleMenu].forEach(el => el.style.display = 'none');
+				}
+			}
+
+			// Run on load and resize
+			checkMobile();
+			window.addEventListener('resize', checkMobile);
 
 			search.addEventListener('input', () => {
 				const query = search.value.toLowerCase();
@@ -261,11 +472,48 @@
 				const li = e.target.closest('li');
 				if (li) {
 					const file = li.getAttribute('data-file');
+					const name = li.textContent;
 					if (file) {
+						// Update splat display
+						splatList.innerHTML = `<li>${name} (${file})</li>`;
+						splatDisplay.style.display = 'block';
+						// Load the file
 						window.location.search = `?url=${encodeURIComponent(file)}`;
 					}
 				}
 			});
-			</script>
+
+			// Toggle menu collapse/expand
+			toggleMenu.addEventListener('click', () => {
+				if (window.innerWidth <= 480) {
+					toolbar.classList.toggle('expanded');
+					toggleIcon.classList.toggle('collapsed');
+					if (toolbar.classList.contains('expanded')) {
+						[search, options, toggleMenu].forEach(el => el.style.display = '');
+					} else {
+						[search, options, toggleMenu].forEach(el => el.style.display = 'none');
+					}
+				} else {
+					toolbar.classList.toggle('collapsed');
+					toggleIcon.classList.toggle('collapsed');
+					if (!toolbar.classList.contains('collapsed')) {
+						[search, options, toggleMenu].forEach(el => el.style.display = '');
+					}
+				}
+			});
+
+			// Ensure the collapsed circle can expand the menu
+			toolbar.addEventListener('click', (e) => {
+				if (toolbar.classList.contains('collapsed') && !e.target.closest('#toggle-menu') && window.innerWidth > 480) {
+					toolbar.classList.remove('collapsed');
+					toggleIcon.classList.remove('collapsed');
+					[search, options, toggleMenu].forEach(el => el.style.display = '');
+				} else if (window.innerWidth <= 480 && !toolbar.classList.contains('expanded') && !e.target.closest('#toggle-menu')) {
+					toolbar.classList.add('expanded');
+					toggleIcon.classList.remove('collapsed');
+					[search, options, toggleMenu].forEach(el => el.style.display = '');
+				}
+			});
+		</script>
 	</body>
 </html>

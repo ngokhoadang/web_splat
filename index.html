@@ -175,7 +175,7 @@
 				position: absolute;
 				top: 50%;
 				left: 50%;
-				/* transform: translateX(200px) translateY(-50%); */
+				transform: translateX(200px) translateY(-50%);
 			}
 			.cube {
 				transform-style: preserve-3d;
@@ -336,7 +336,7 @@
 					left: 5px;
 					padding: 0;
 					border-radius: 50%;
-					display: flex;
+					/* display: flex; */
 					align-items: center;
 					justify-content: center;
 					background: #e5e5e5;
@@ -349,11 +349,11 @@
 					border-radius: 12px;
 					padding: 8px;
 				}
-				#toolbar.expanded #search,
+				/* #toolbar.expanded #search,
 				#toolbar.expanded #options,
 				#toolbar.expanded #toggle-menu {
 					display: block;
-				}
+				} */
 				#search {
 					padding: 6px;
 					font-size: 10px;
@@ -390,6 +390,41 @@
 					transform: translateX(100px) translateY(-50%);
 				}
 			}
+
+			/* For very small screens */
+			@media (max-width: 360px) {
+				#toolbar {
+					width: 50px;
+					height: 50px;
+					top: 5px;
+					left: 5px;
+					padding: 0;
+					border-radius: 50%;
+					/* display: flex; */
+					align-items: center;
+					justify-content: center;
+					background: #e5e5e5;
+					border: 1px solid #cccccc;
+					box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+				}
+				
+				#splat-display {
+					top: 15px;
+					right: 3px;
+					width: 100px;
+					padding: 4px;
+				}
+				#splat-list li {
+					padding: 3px;
+					font-size: 8px;
+				}
+				#quality, #caminfo {
+					font-size: 8px;
+				}
+				.cube-wrapper {
+					transform: translateX(80px) translateY(-50%);
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -399,10 +434,10 @@
 		<div id="toolbar">
 			<input type="text" id="search" placeholder="Search splat files..." />
 			<ul id="options">
-				<li data-file="3283.splat">Cây 1</li>
-				<li data-file="3284.splat">Cây 2</li>
-				<li data-file="capy.splat">Capy</li>
-				<!-- <li data-file="garden.splat">Garden</li> -->
+				<li data-file="3283.splat">cay1</li>
+				<li data-file="3284.splat">cay2</li>
+				<li data-file="capy.splat">capypara</li>
+				<li data-file="garden.splat">Garden</li>
 			</ul>
 			<div id="toggle-menu">
 				<i class="fas fa-angle-up"></i>
@@ -486,18 +521,23 @@
 			// Toggle menu collapse/expand
 			toggleMenu.addEventListener('click', () => {
 				if (window.innerWidth <= 480) {
-					toolbar.classList.toggle('expanded');
-					toggleIcon.classList.toggle('collapsed');
 					if (toolbar.classList.contains('expanded')) {
-						[search, options, toggleMenu].forEach(el => el.style.display = '');
-					} else {
+						toolbar.classList.remove('expanded');
+						toolbar.classList.add('collapsed');
 						[search, options, toggleMenu].forEach(el => el.style.display = 'none');
+					} else {
+						toolbar.classList.remove('collapsed');
+						toolbar.classList.add('expanded');
+						[search, options, toggleMenu].forEach(el => el.style.display = '');
 					}
+					toggleIcon.classList.toggle('collapsed');
 				} else {
 					toolbar.classList.toggle('collapsed');
 					toggleIcon.classList.toggle('collapsed');
 					if (!toolbar.classList.contains('collapsed')) {
 						[search, options, toggleMenu].forEach(el => el.style.display = '');
+					} else {
+						[search, options, toggleMenu].forEach(el => el.style.display = 'none');
 					}
 				}
 			});
@@ -510,6 +550,7 @@
 					[search, options, toggleMenu].forEach(el => el.style.display = '');
 				} else if (window.innerWidth <= 480 && !toolbar.classList.contains('expanded') && !e.target.closest('#toggle-menu')) {
 					toolbar.classList.add('expanded');
+					toolbar.classList.remove('collapsed');
 					toggleIcon.classList.remove('collapsed');
 					[search, options, toggleMenu].forEach(el => el.style.display = '');
 				}
